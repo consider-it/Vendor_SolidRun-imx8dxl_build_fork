@@ -8,6 +8,7 @@
 
 ### Additional Build Parameters
 : ${ROOT_PWD:=citone}
+: ${LTE_APN:=data641003}
 
 ### Versions
 ATF_GIT_URI=https://github.com/nxp-imx/imx-atf
@@ -317,7 +318,7 @@ if [ ! -f rootfs.e2.orig ] || [[ ${ROOTDIR}/${BASH_SOURCE[0]} -nt rootfs.e2.orig
 	fakeroot debootstrap --variant=minbase \
 		--arch=arm64 --components=main,contrib,non-free \
 		--foreign \
-		--include=apt-transport-https,bluez,busybox,ca-certificates,can-utils,command-not-found,chrony,curl,e2fsprogs,ethtool,fdisk,gpiod,gpsd,gpsd-tools,haveged,i2c-tools,ifupdown,iputils-ping,isc-dhcp-client,iw,initramfs-tools,libiio-utils,libnss-resolve,libpcap0.8,lm-sensors,locales,nano,net-tools,ntpdate,openssh-server,psmisc,python3-gps,python3-serial,rfkill,sudo,systemd-sysv,tio,usbutils,wget,wpasupplicant,xterm,xz-utils,libconfig9,tcpdump,mosquitto,libmosquitto1,libatomic1 \
+		--include=apt-transport-https,bluez,busybox,ca-certificates,can-utils,command-not-found,chrony,curl,e2fsprogs,ethtool,fdisk,gpiod,gpsd,gpsd-tools,haveged,i2c-tools,iputils-ping,iw,initramfs-tools,libiio-utils,libpam-systemd,libpcap0.8,lm-sensors,locales,nano,net-tools,ntpdate,openssh-server,psmisc,python3-gps,python3-serial,rfkill,sudo,systemd-sysv,tio,usbutils,wget,xterm,xz-utils,libconfig9,tcpdump,mosquitto,libmosquitto1,libatomic1 \
 		bullseye \
 		stage1 \
 		https://deb.debian.org/debian
@@ -354,10 +355,17 @@ systemctl enable gpsd
 # populate fstab
 printf "/dev/root / ext4 defaults 0 1\\n" > /etc/fstab
 
-# enable systemd-networkd and re-configure DNS
-systemctl enable systemd-networkd
-systemctl enable systemd-resolved
-ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+# install some network manager (does not work as part of debootstrap)
+apt-get install -y network-manager modemmanager
+systemctl enable NetworkManager.service
+systemctl enable ModemManager.service
+
+# enable LTE modem by default (service file will only be added later)
+ln -sf /etc/systemd/system/lte-power.service /etc/systemd/system/multi-user.target.wants/lte-power.service
+
+# generate LTE config file
+echo "## CIT One mobile connection configuration" > /usr/local/etc/lte.conf
+echo "LTE_APN=${LTE_APN}" >> /usr/local/etc/lte.conf
 
 # delete self
 rm -f /stage2.sh
@@ -441,6 +449,9 @@ cd "${ROOTDIR}/images/linux"; tar -c --owner=root:0 -f "${ROOTDIR}/images/linux.
 
 # Add overlay to rootfs
 find "${ROOTDIR}/overlay" -type f -printf "%P\n" | e2cp -G 0 -O 0 -s "${ROOTDIR}/overlay" -d "${ROOTDIR}/build/debian/rootfs.e2:" -a
+
+# Add special overlay files to rootfs
+find "${ROOTDIR}/overlay-600" -type f -printf "%P\n" | e2cp -G 0 -O 0 -P 600 -s "${ROOTDIR}/overlay-600" -d "${ROOTDIR}/build/debian/rootfs.e2:" -a
 
 # assemble final disk image
 rm -f "${ROOTDIR}/images/emmc.img"
