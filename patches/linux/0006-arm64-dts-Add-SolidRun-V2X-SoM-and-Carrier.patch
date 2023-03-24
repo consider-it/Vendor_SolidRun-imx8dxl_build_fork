@@ -435,7 +435,7 @@ index 000000000000..f4b9c6353abe
 +	adp-disable;
 +	power-active-high;
 +	disable-over-current;
-+	dr_mode = "peripheral";
++	dr_mode = "host";
 +	status = "okay";
 +};
 +
@@ -1029,6 +1029,6 @@ index 000000000000..e6248af885e0
 +		compatible = "brcm,bcm4329-fmac";
 +    };
 +};
--- 
+--
 2.38.1
 
