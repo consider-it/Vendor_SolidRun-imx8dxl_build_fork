@@ -6,6 +6,9 @@
 : ${IMAGE_SIZE_MiB:=1000}
 : ${GATEWAY_REVISION:=1.1}
 
+### Additional Build Parameters
+: ${ROOT_PWD:=citone}
+
 ### Versions
 ATF_GIT_URI=https://github.com/nxp-imx/imx-atf
 ATF_RELEASE=tags/lf-5.15.52-2.1.0
@@ -333,8 +336,13 @@ mount -vt sysfs sysfs /sys
 # configure dns
 cat /proc/net/pnp > /etc/resolv.conf
 
-# set empty root password
-passwd -d root
+# set non-empty root password
+echo "root:${ROOT_PWD}" | chpasswd
+
+# create user
+adduser --quiet --disabled-password --shell /bin/bash --home /home/user --gecos "Main User" user
+echo "user:user" | chpasswd
+adduser user sudo
 
 # update command-not-found db
 apt-file update
