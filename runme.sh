@@ -373,7 +373,7 @@ EOF
 		-m 1G \
 		-M virt \
 		-cpu cortex-a57 \
-		-smp 1 \
+		-smp $(($(nproc) < 8 ? $(nproc) : 8)) \
 		-netdev user,id=eth0 \
 		-device virtio-net-device,netdev=eth0 \
 		-drive file=rootfs.e2.orig,if=none,format=raw,id=hd0 \
