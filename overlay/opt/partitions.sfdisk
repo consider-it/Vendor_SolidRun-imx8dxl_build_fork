@@ -1,0 +1,16 @@
+## CIT One Disk Partitions
+# p1: 2G  main image
+# p2: 2G  space for secondary imgae (not used yet)
+# p3: 2G /mnt/src (logging)
+# p4: 50M /mnt/rw (persistent storage)
+
+label: dos
+label-id: 0x2f6d52ee
+device: /dev/mmcblk0
+unit: sectors
+sector-size: 512
+
+/dev/mmcblk0p1 : start=       49152, size=     4194304, type=83
+#/dev/mmcblk0p2 : start=     4243456, size=     4194304, type=83
+/dev/mmcblk0p3 : start=     8437760, size=     4194304, type=83
+/dev/mmcblk0p4 : start=    15000000, size=      102400, type=83

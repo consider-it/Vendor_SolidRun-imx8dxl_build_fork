@@ -371,6 +371,9 @@ echo "LTE_APN=${LTE_APN}" >> /usr/local/etc/lte.conf
 mkdir -p /etc/cron.hourly
 mv /etc/cron.daily/logrotate /etc/cron.hourly
 
+# run some tasks on first boot (cron is available b/c of logrotate)
+echo "@reboot root /bin/bash /opt/firstboot.sh > /opt/firstboot.log 2>&1" > /etc/cron.d/firstboot
+
 # delete self
 rm -f /stage2.sh
 
