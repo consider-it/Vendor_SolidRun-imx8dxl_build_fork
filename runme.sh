@@ -318,7 +318,7 @@ if [ ! -f rootfs.e2.orig ] || [[ ${ROOTDIR}/${BASH_SOURCE[0]} -nt rootfs.e2.orig
 	fakeroot debootstrap --variant=minbase \
 		--arch=arm64 --components=main,contrib,non-free \
 		--foreign \
-		--include=apt-transport-https,bluez,busybox,ca-certificates,can-utils,command-not-found,chrony,curl,e2fsprogs,ethtool,fdisk,gpiod,gpsd,gpsd-tools,haveged,i2c-tools,iputils-ping,iw,initramfs-tools,libiio-utils,libpam-systemd,libpcap0.8,lm-sensors,locales,nano,net-tools,ntpdate,openssh-server,psmisc,python3-gps,python3-serial,rfkill,sudo,systemd-sysv,tio,usbutils,wget,xterm,xz-utils,libconfig9,tcpdump,mosquitto,libmosquitto1,libatomic1 \
+		--include=apt-transport-https,bluez,busybox,ca-certificates,can-utils,command-not-found,chrony,curl,e2fsprogs,ethtool,fdisk,gpiod,gpsd,gpsd-tools,haveged,i2c-tools,iputils-ping,iw,initramfs-tools,libiio-utils,libpam-systemd,libpcap0.8,lm-sensors,locales,logrotate,nano,net-tools,ntpdate,openssh-server,psmisc,python3-gps,python3-serial,rfkill,sudo,systemd-sysv,tio,usbutils,wget,xterm,xz-utils,libconfig9,tcpdump,mosquitto,libmosquitto1,libatomic1 \
 		bullseye \
 		stage1 \
 		https://deb.debian.org/debian
@@ -366,6 +366,10 @@ ln -sf /etc/systemd/system/lte-power.service /etc/systemd/system/multi-user.targ
 # generate LTE config file
 echo "## CIT One mobile connection configuration" > /usr/local/etc/lte.conf
 echo "LTE_APN=${LTE_APN}" >> /usr/local/etc/lte.conf
+
+# change logrotate from daily to hourly
+mkdir -p /etc/cron.hourly
+mv /etc/cron.daily/logrotate /etc/cron.hourly
 
 # delete self
 rm -f /stage2.sh
