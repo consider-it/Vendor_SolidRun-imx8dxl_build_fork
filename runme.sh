@@ -397,11 +397,14 @@ cp rootfs.e2.orig rootfs.e2
 gen_os_version() {
 	local TIMESTAMP
 	local IMAGE_SOURCE_COMMIT
+	local IMAGE_SOURCE_VERSION
 
 	IMAGE_BUILD_DATE="$(date +%Y%m%d)"
 	IMAGE_SOURCE_COMMIT="unknown"
+	IMAGE_SOURCE_VERSION="unknown"
 	if [ -d ${ROOTDIR} ]; then
 		IMAGE_SOURCE_COMMIT="$(git -C ${ROOTDIR} rev-parse --short HEAD)"
+		IMAGE_SOURCE_VERSION="$(git -C ${ROOTDIR} describe --tags --match 'v*' --always --dirty)"
 	fi
 
 	printf "PRETTY_NAME=\"%s\"\n" "Debian GNU/Linux 11 (bullseye) SolidRun Fork for i.MX8DXL"
@@ -415,6 +418,7 @@ gen_os_version() {
 	printf "BUG_REPORT_URL=\"%s\"\n" "https://www.solid-run.com/contact-us/#technical-support"
 	printf "IMAGE_BUILD_DATE=\"%s\"\n" "${IMAGE_BUILD_DATE}"
 	printf "IMAGE_SOURCE_COMMIT=\"%s\"\n" "${IMAGE_SOURCE_COMMIT}"
+	printf "IMAGE_SOURCE_VERSION=\"%s\"\n" "${IMAGE_SOURCE_VERSION}"
 
 }
 gen_os_version > "${ROOTDIR}/build/os-version"
