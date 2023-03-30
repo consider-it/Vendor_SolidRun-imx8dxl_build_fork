@@ -1,0 +1,2 @@
+KERNEL=="sd?1", SUBSYSTEMS=="block", ACTION=="add", RUN+="/usr/bin/systemctl --no-block start usbdrive@%k.service"
+KERNEL=="sd?1", SUBSYSTEMS=="block", ACTION=="remove", RUN+="/usr/bin/systemctl --no-block stop usbdrive@%k.service"

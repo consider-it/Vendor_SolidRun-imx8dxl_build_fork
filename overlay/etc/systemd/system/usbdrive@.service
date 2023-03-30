@@ -1,0 +1,17 @@
+[Unit]
+Description="Replace /mnt/src with USB drive"
+
+[Service]
+Type=forking
+GuessMainPID=no
+RemainAfterExit=yes
+
+ExecStartPre=-/usr/bin/systemctl stop v2x-v2xgateway
+ExecStartPre=/usr/bin/systemctl stop mnt-src.mount
+ExecStart=/usr/bin/mount /dev/%I /mnt/src
+ExecStartPost=-/bin/sh -c "/usr/bin/systemctl is-enabled v2x-v2xgateway && /usr/bin/systemctl start v2x-v2xgateway"
+
+ExecStop=-/usr/bin/systemctl stop v2x-v2xgateway
+ExecStop=/usr/bin/systemctl stop mnt-src.mount
+ExecStopPost=/usr/bin/mount /dev/mmcblk0p3 /mnt/src
+ExecStopPost=-/bin/sh -c "/usr/bin/systemctl is-enabled v2x-v2xgateway && /usr/bin/systemctl start v2x-v2xgateway"
